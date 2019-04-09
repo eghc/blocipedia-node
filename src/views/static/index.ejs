@@ -1,19 +1,33 @@
 
 <% include ./partials/header.ejs %>
-<% include ../static/partials/messages.ejs %>
   <script type="text/javascript">
     $(document).ready(function(){
       //let show = false;
       $("#sign").click(function(){
-        $(".signUp").load("/signup");
+        $(".form").load("/signup");
+      });
+      $("#log").click(function(){
+        $(".form").load("/login");
       });
     });
 
   </script>
-    <h2>Welcome to Blocipedia</h2>
-
-    <div class="signUp">
-      <input type="button" value="Sign Up" class="btn btn-primary" id="sign"/>
-    </div>
+  <% include ./partials/navbar.ejs%>
+  <main class="container">
+    <header class="jumbotron my-4">
+      <% include ../static/partials/messages.ejs %>
+      <h2 class="display-3">Welcome to Blocipedia</h2>
+    </header>
+    <section>
+      <section class="col-lg-8">
+      <% if(!currentUser) { %>
+        <div class="form" >
+          <input type="button" value="Sign Up" class="btn btn-primary" id="sign"/>
+          <input type="button" value="Log In" class="btn btn-primary" id="log"/>
+        </div>
+      <% }%>
+      </section>
+    </section>
+    </main>
 
 <% include ./partials/footer.ejs %>

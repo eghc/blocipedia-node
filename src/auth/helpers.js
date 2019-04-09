@@ -13,7 +13,7 @@ module.exports = {
   },
 
 // #2
-  comparePass(userPassword, databasePassword) {
+  comparePassword(userPassword, databasePassword) {
     return bcrypt.compareSync(userPassword, databasePassword);
   }
 }
