@@ -23,6 +23,7 @@ module.exports = {
 
 // #4
         if (!user || !authHelper.comparePassword(password, user.password)) {
+          console.log("test 0");
           return done(null, false, { message: "Invalid email or password" });
         }
 // #5
