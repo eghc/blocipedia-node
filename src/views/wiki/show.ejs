@@ -1,0 +1,26 @@
+<% include ../static/partials/header.ejs %>
+<% include ../static/partials/navbar.ejs %>
+<main class="container">
+  <section>
+    <header class="jumbotron my-4">
+      <% include ../static/partials/messages.ejs %>
+      <div class="col-md-8">
+        <h2><%= wiki.title %></h2>
+      </div>
+      <div class="col-md-2">
+        <% if(currentUser) { %>
+          <form action="/wiki/<%= wiki.id %>/delete" method="post">
+            <a href="/wiki/<%= wiki.id %>/edit" class="btn btn-primary btn-sm">Edit</a>
+            <button type="submit" class="btn btn-primary btn-sm">Delete</button>
+          </form>
+        <% } %>
+      </div>
+    </header>
+    <section class="col-lg-10">
+        <p><%- wiki.body %> </p>
+    </section>
+  </section>
+</main>
+
+
+<% include ../static/partials/footer.ejs %>

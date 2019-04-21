@@ -1,0 +1,27 @@
+<% include ../static/partials/header.ejs %>
+<% include ../static/partials/navbar.ejs %>
+<main class="container">
+  <section>
+    <form action="/wiki/<%= wiki.id %>/update" method="post">
+      <header class="jumbotron my-4">
+        <% include ../static/partials/messages.ejs %>
+        <div class="col-md-8">
+          <div class="form-group">
+            <input type="text" class="form-control" name="title" aria-describedby="titleHelp" value="<%= wiki.title %>">
+          </div>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary btn-sm">Done</button>
+        </div>
+      </header>
+      <section class="col-lg-10">
+        <div class="form-group">
+          <input type="text" class="form-control" name="body" aria-describedby="bodyHelp" value="<%= wiki.body %>">
+        </div>
+      </section>
+    </form>
+  </section>
+</main>
+
+
+<% include ../static/partials/footer.ejs %>
