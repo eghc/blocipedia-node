@@ -1,6 +1,7 @@
 const userQueries = require("../db/queries.users.js");
 const wikiQueries = require("../db/queries.wikis.js");
 const passport = require("passport");
+const Authorizer = require("../policies/wiki");
 var fs = require('fs');
 
 module.exports = {
@@ -15,27 +16,39 @@ module.exports = {
     });
   },
   new(req, res, next){
-    res.render("wiki/new");
+    const authorized = new Authorizer(req.user).new();
+    if(authorized) {
+      res.render("wiki/new");
+    }else{
+      req.flash("notice", "You are not authorized to do that.");
+      res.redirect("/wiki");
+    }
   },
   create(req, res, next){
     //#1
+    const authorized = new Authorizer(req.user).create();
 
-    let newArticle = {
-        title: req.body.title,
-        body: req.body.body,
-        private: req.body.private === 'on' ? true: false,
-        userId: req.user.id
-    };
-    //console.log(newArticle);
+    if(authorized) {
+      let newArticle = {
+          title: req.body.title,
+          body: req.body.body,
+          private: req.body.private === 'on' ? true: false,
+          userId: req.user.id
+      };
+      //console.log(newArticle);
 
-    wikiQueries.addWiki(newArticle, (err, wiki) => {
-      //console.log(err);
-        if(err){
-          res.redirect(500, "/wiki/new");
-        } else {
-          res.redirect(303, `/wiki/${wiki.id}`);
-        }
-    });
+      wikiQueries.addWiki(newArticle, (err, wiki) => {
+        //console.log(err);
+          if(err){
+            res.redirect(500, "/wiki/new");
+          } else {
+            res.redirect(303, `/wiki/${wiki.id}`);
+          }
+      });
+    } else{
+      req.flash("notice", "You are not authorized to do that.");
+      res.redirect("/wiki");
+    }
     //res.redirect("/wiki");
   },
   showWiki(req, res, next){
@@ -53,7 +66,13 @@ module.exports = {
       if(err || wiki == null){
         res.redirect(500, "/wiki/");
       }else{
-        res.render("wiki/edit",{wiki: wiki});
+        const authorized = new Authorizer(req.user, wiki).edit();
+        if(authorized){
+          res.render("wiki/edit",{wiki: wiki});
+        }else{
+          req.flash("You are not authorized to do that.")
+          res.redirect(`/wiki/${req.params.id}`);
+        }
       }
     });
   },

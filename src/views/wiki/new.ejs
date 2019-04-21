@@ -16,10 +16,12 @@
       <textarea rows="4" class="form-control" name="body" placeholder="Enter body of the article."></textarea>
       <small class="text-muted" id="bodyHelp">Body must be 150 or more characters in length.</small>
     </div>
-    <div class="form-check">
-      <input type="checkbox" class="form-check-input" name="private">
-      <label class="form-check-label" for="private">Please check this if you would like this article to be private.</label>
-    </div>
+    <% if(currentUser.isPremium() ||currentUser.isAdmin()){ %>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" name="private">
+        <label class="form-check-label" for="private">Please check this if you would like this article to be private.</label>
+      </div>
+    <% } %>
     <button type="submit" class="btn btn-primary">Submit</button>
   </form>
 </main>
