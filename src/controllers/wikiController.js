@@ -99,5 +99,23 @@ module.exports = {
         res.redirect(303, "/wiki")
       }
     });
+  },
+  getPrivateWikis(req,res,next){
+    const authorized = new Authorizer(req.user).create();
+    if(authorized){
+      wikiQueries.getMyPrivateWikis(req, (err, wikis) => {
+        console.log("1");
+        if(err){
+          //do something
+          res.send(null);
+        } else {
+          //console.log(wikis[0].dataValues);
+          res.send(wikis);
+        }
+      });
+    }else{
+      req.flash("You are not authorized to do that.")
+      res.redirect(`/`);
+    }
   }
 }

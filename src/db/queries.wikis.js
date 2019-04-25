@@ -82,29 +82,20 @@ module.exports = {
          req.flash("notice", "You are not authorized to do that.");
          callback("Forbidden");
        }
-
-
-// // #3
-//        const authorized = new Authorizer(req.user, topic).update();
-//
-//        if(authorized) {
-//
-// // #4
-//          topic.update(updatedTopic, {
-//            fields: Object.keys(updatedTopic)
-//          })
-//          .then(() => {
-//            callback(null, topic);
-//          })
-//          .catch((err) => {
-//            callback(err);
-//          });
-//        } else {
-//
-// // #5
-//          req.flash("notice", "You are not authorized to do that.");
-//          callback("Forbidden");
-//        }
+     });
+   },
+   getMyPrivateWikis(req, callback){
+     return Wiki.findAll({
+      where: {
+        userId: req.user.id,
+        private: true
+      }
+      })
+     .then((wikis) => {
+       callback(null, wikis);
+     })
+     .catch((err) => {
+       callback(err);
      });
    }
 }

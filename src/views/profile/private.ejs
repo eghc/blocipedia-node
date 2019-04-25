@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="col-md-8">
+    <% wikis.forEach((wiki) => { %>
+      <div class="row">
+        <div class="col-md-10">
+          <a href="/wiki/<%= wiki.id %>"><h4><%= wiki.title %></h4></a>
+          <p><%= wiki.body.substring(0, 100).replace(/(<([^>]+)>)/ig,'') %> ... </p>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>

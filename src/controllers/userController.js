@@ -1,6 +1,7 @@
 const userQueries = require("../db/queries.users.js");
 const passport = require("passport");
 const sgMail = require('@sendgrid/mail');
+const Authorizer = require("../policies/application");
 var fs = require('fs');
 
 module.exports = {
@@ -72,5 +73,48 @@ module.exports = {
     req.logout();
     req.flash("notice", "You've successfully signed out!");
     res.redirect("/");
+  },
+  showProfile(req,res,next){
+    const authorized = new Authorizer(req.user)._isUser();
+    if(authorized) {
+      res.render("profile/index");
+    }else{
+      req.flash("notice", "You are not authorized to do that.");
+      res.redirect("/");
+    }
+  },
+  charge(req,res,next){
+    const authorized = new Authorizer(req.user)._isUser();
+    if(authorized) {
+      userQueries.upgradeUser(req, (err, user) => {
+        if(err){
+          //console.log(err);
+          //req.flash("notice", "There was an error upgrading your account.");
+          res.redirect(500, "/profile");
+        }else{
+          res.redirect(303,"/profile");
+        }
+      });
+    }else{
+      req.flash("notice", "You are not authorized to do that.");
+      res.redirect("/");
+    }
+  },
+  downgrade(req,res,next){
+    const authorized = new Authorizer(req.user)._isUser();
+    if(authorized) {
+      userQueries.downgradeUser(req, (err, user) => {
+        if(err){
+          //console.log(err);
+          req.flash("notice", "There was an error downgrading your account.");
+          res.redirect(500, "/profile");
+        }else{
+          res.redirect(303,"/profile");
+        }
+      });
+    }else{
+      req.flash("notice", "You are not authorized to do that.");
+      res.redirect("/");
+    }
   }
 }

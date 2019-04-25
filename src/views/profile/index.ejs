@@ -1,0 +1,107 @@
+<% include ../static/partials/header.ejs %>
+<script type="text/javascript">
+
+  // $(document).on("load", function(){
+  //   //$.get("/getPrivateWikis")
+  // });
+
+
+
+  $(document).ready(function(){
+    //let show = false;
+    // $("#upgrade").click(function(){
+    //   $(".form").load("/profile/upgrade");
+    // });
+    let results = $.getJSON("/getPrivateWikis", {format: "json"})
+    .done((data) =>{
+      //console.log(data);
+      let text = "";
+      data.forEach((d) => {
+        console.log(d);
+        text += "<div class='row'><div class='col-md-10'><a href='/wiki/" + d.id
+          + "'><h4>" + d.title + "</h4></a><p>" + d.body.substring(0, 100).replace(/(<([^>]+)>)/ig,'')
+            + "...</p></div></div>";
+      });
+      $("#privateWikis").html(text);
+    });
+
+
+    var stripe = Stripe('pk_test_dTO6mdezszCmlCfXaZw32fCV00ZhM3EmsJ');
+
+
+    $("#checkout-button").click(function () {
+      // When the customer clicks on the button, redirect
+      // them to Checkout.
+      let url = "";
+      if(window.location.host.includes("localhost")){
+        url = "http://" + window.location.host;
+      }else{
+        url = "https://" + window.location.host;
+      }
+      stripe.redirectToCheckout({
+        items: [{sku: 'sku_EvlBzZ2DRspitu', quantity: 1}],
+
+        // Note that it is not guaranteed your customers will be redirected to this
+        // URL *100%* of the time, it's possible that they could e.g. close the
+        // tab between form submission and the redirect.
+
+        successUrl: url + '/profile/charge',
+        cancelUrl: url +'/profile/',
+      })
+      .then(function (result) {
+        if (result.error) {
+          // If `redirectToCheckout` fails due to a browser or network
+          // error, display the localized error message to your customer.
+          var displayError = document.getElementById('error-message');
+          displayError.textContent = result.error.message;
+        }
+      });
+    });
+
+  });
+
+</script>
+
+<main class="container">
+  <% include ../static/partials/navbar.ejs %>
+  <section>
+    <header class="jumbotron my-4">
+      <% include ../static/partials/messages.ejs %>
+      <div class="row">
+        <div class="col-md-10">
+          <h1><%= currentUser.email %></h1>
+        </div>
+      </div>
+    </header>
+    <section class="col-lg-10">
+      <% if(currentUser.isPremium() || currentUser.isAdmin()){ %>
+        <form method="POST" action="/profile/downgrade">
+          <input type="submit" value="Downgrade Account" class="btn btn-primary"/>
+        </form>
+        <br>
+
+        <div class="row">
+          <h2>My Private Wikis</h2>
+          <div class="col-md-10">
+            <div id="privateWikis">
+            </div>
+          </div>
+        </div>
+
+      <% } else{ %>
+          <div id="error-message"></div>
+          <button
+            id="checkout-button"
+            role="link"
+            class="btn btn-primary"
+          >
+            Upgrade Account
+          </button>
+
+      <% } %>
+    </section>
+  </section>
+</main>
+
+
+<% include ../static/partials/footer.ejs %>
