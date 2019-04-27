@@ -1,6 +1,28 @@
 <% include ../static/partials/header.ejs %>
-<% include ../static/partials/navbar.ejs %>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    let public = true;
+    $('#toggle').click(function (){
+      if(public){
+        $('#toggle').text('Public Wikis');
+        $('#nonPrivate').css('display', 'none');
+        $('#private').css('display', 'block');
+        public = false;
+      }else{
+        $('#toggle').text('Private Wikis');
+        $('#private').css('display', 'none');
+        $('#nonPrivate').css('display', 'block');
+        public = true;
+      }
+
+    });
+  });
+
+</script>
+
 <main class="container">
+  <% include ../static/partials/navbar.ejs %>
   <section>
     <header class="jumbotron my-4">
       <% include ../static/partials/messages.ejs %>
@@ -11,21 +33,36 @@
           </div>
         </div>
         <div class="col-md-2">
-          <a href="/wiki/new" class="btn btn-primary btn-md">Add an Article</a>
+          <a href="/wiki/new" class="btn btn-primary btn-md">Add an Wikis</a>
         </div>
+        <% if(currentUser && (currentUser.isAdmin())){ %>
+        <div class="col-md-2">
+          <button class="btn btn-primary btn-md" id="toggle">Private Wikis</button>
+        </div>
+        <% } %>
       </div>
     </header>
     <section class="col-lg-10">
-      <% wikis.forEach((wiki) => { %>
-        <% if(!wiki.private) { %>
-          <div class="row">
-            <div class="col-md-10">
-              <a href="/wiki/<%= wiki.id %>"><h4><%= wiki.title %></h4></a>
-              <p><%= wiki.body.substring(0, 100).replace(/(<([^>]+)>)/ig,'') %> ... </p>
+      <div id="nonPrivate">
+        <% wikis.forEach((wiki) => { %>
+            <div class="row">
+              <div class="col-md-10">
+                <a href="/wiki/<%= wiki.id %>"><h4><%= wiki.title %></h4></a>
+                <p><%= wiki.body.substring(0, 100).replace(/(<([^>]+)>)/ig,'') %> ... </p>
+              </div>
             </div>
-          </div>
-        <% } %>
-      <% }) %>
+        <% }) %>
+      </div>
+      <div id = "private" style="display:none">
+        <% privateWikis.forEach((wiki) => { %>
+            <div class="row">
+              <div class="col-md-10">
+                <a href="/wiki/<%= wiki.id %>"><h4><%= wiki.title %></h4></a>
+                <p><%= wiki.body.substring(0, 100).replace(/(<([^>]+)>)/ig,'') %> ... </p>
+              </div>
+            </div>
+        <% }) %>
+      </div>
     </section>
   </section>
 </main>

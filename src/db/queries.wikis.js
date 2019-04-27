@@ -6,7 +6,28 @@ module.exports = {
 
 //#1
   getAllWikis(callback){
-    return Wiki.all()
+    return Wiki.findAll({
+      where:{
+        private: false
+      },
+      order: [['createdAt', 'DESC']],
+      limit: 20
+    })
+    .then((wikis) => {
+      callback(null, wikis);
+    })
+    .catch((err) => {
+      callback(err);
+    })
+  },
+  getAllPrivateWikis(callback){
+    return Wiki.findAll({
+      where:{
+        private: true
+      },
+      order: [['createdAt', 'DESC']],
+      limit: 20
+    })
     .then((wikis) => {
       callback(null, wikis);
     })
@@ -86,13 +107,39 @@ module.exports = {
    },
    getMyPrivateWikis(req, callback){
      return Wiki.findAll({
-      where: {
-        userId: req.user.id,
-        private: true
-      }
+        where: {
+          userId: req.user.id,
+          private: true
+        }
       })
      .then((wikis) => {
        callback(null, wikis);
+     })
+     .catch((err) => {
+       callback(err);
+     });
+   },
+   makePublic(req, callback){
+     return Wiki.findAll({
+        where: {
+          userId: req.user.id,
+          private: true
+        }
+      })
+     .then((wikis) => {
+       if(!wikis){
+         return callback("Nothing to update");
+       }
+       wikis.forEach((wiki) =>{
+         let updatedWiki = {
+           title: wiki.title,
+           body: wiki.body,
+           private: false
+         }
+         wiki.update(updatedWiki, {
+           fields: Object.keys(updatedWiki)
+         })
+       });
      })
      .catch((err) => {
        callback(err);

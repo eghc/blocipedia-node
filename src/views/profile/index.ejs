@@ -58,6 +58,16 @@
       });
     });
 
+
+    $("#downgrade").click(function(){
+      if(window.confirm("All your private wikis will be public. Do you want to continue?")){
+        $.post("/profile/downgrade",
+          function(data,status){
+            setTimeout("location.reload(true);",500);
+          });
+      }
+    });
+
   });
 
 </script>
@@ -75,9 +85,7 @@
     </header>
     <section class="col-lg-10">
       <% if(currentUser.isPremium() || currentUser.isAdmin()){ %>
-        <form method="POST" action="/profile/downgrade">
-          <input type="submit" value="Downgrade Account" class="btn btn-primary"/>
-        </form>
+        <input type="submit" value="Downgrade Account" id="downgrade" class="btn btn-primary"/>
         <br>
 
         <div class="row">

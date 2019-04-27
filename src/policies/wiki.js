@@ -13,7 +13,12 @@ module.exports = class TopicPolicy extends ApplicationPolicy {
 
  // #3
   edit() {
-    return this._isUser();
+    if(this.record.private){
+      return this.privateRecord();
+    }else{
+      return this._isUser()
+    }
+
   }
 
   update() {
@@ -22,5 +27,13 @@ module.exports = class TopicPolicy extends ApplicationPolicy {
 
   destroy() {
     return this.update();
+  }
+
+  private(){
+    return this._isUser() && (this._isAdmin() || this._isPremium());
+  }
+
+  privateRecord(){
+    return this._isUser() && (this._isAdmin() || this._isOwner());
   }
 }

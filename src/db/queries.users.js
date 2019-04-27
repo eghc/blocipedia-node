@@ -1,6 +1,7 @@
 // #1
 const User = require("./models").User;
 const bcrypt = require("bcryptjs");
+const wikiQueries = require("./queries.wikis.js");
 
 module.exports = {
 // #2
@@ -68,6 +69,7 @@ module.exports = {
             fields: Object.keys(updatedUser)
           })
           .then(() => {
+            wikiQueries.makePublic(req);
             callback(null, user);
           })
 

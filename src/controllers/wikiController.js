@@ -7,11 +7,26 @@ var fs = require('fs');
 module.exports = {
   show(req, res, next){
     wikiQueries.getAllWikis((err, wikis) => {
+      console.log(err);
       if(err){
         res.redirect(500, "/");
       } else {
-        //console.log(topics);
-        res.render("wiki/index", {wikis});
+          let authorized= new Authorizer(req.user)._isUser();
+          console.log(authorized);
+          if(authorized){
+            authorized = new Authorizer(req.user).private();
+            console.log(authorized);
+            wikiQueries.getAllPrivateWikis((err, privateWikis) => {
+              console.log(err);
+              if(err){
+                res.redirect(500, "/");
+              }else{
+                res.render("wiki/index", {wikis: wikis, privateWikis:privateWikis});
+              }
+            });
+          } else{
+             res.render("wiki/index", {wikis: wikis, privateWikis:[{id:null, title:null, body: ''}]});
+          }
       }
     });
   },
@@ -26,7 +41,7 @@ module.exports = {
   },
   create(req, res, next){
     //#1
-    const authorized = new Authorizer(req.user).create();
+    const authorized = new Authorizer(req.user, wiki).create();
 
     if(authorized) {
       let newArticle = {
@@ -57,7 +72,17 @@ module.exports = {
       if(err || wiki == null){
         res.redirect(500, "/wiki/");
       }else{
-        res.render("wiki/show",{wiki: wiki});
+        if(wiki.private){
+          let authorized = new Authorizer(req.user, wiki).privateRecord();
+          if(authorized){
+            res.render("wiki/show",{wiki: wiki});
+          }else{
+            req.flash("notice", "You are not authorized to do that.");
+            res.redirect("/wiki");
+          }
+        }else{
+          res.render("wiki/show",{wiki: wiki});
+        }
       }
     });
   },
@@ -81,7 +106,6 @@ module.exports = {
         title: req.body.title,
         body: req.body.body,
         private: req.body.private === 'on' ? true: false,
-        userId: req.user.id
     };
     wikiQueries.updateWiki(req, updateArticle, (err, wiki) => {
       if(err || wiki == null){
@@ -101,7 +125,7 @@ module.exports = {
     });
   },
   getPrivateWikis(req,res,next){
-    const authorized = new Authorizer(req.user).create();
+    const authorized = new Authorizer(req.user).private();
     if(authorized){
       wikiQueries.getMyPrivateWikis(req, (err, wikis) => {
         console.log("1");
