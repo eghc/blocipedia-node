@@ -3,6 +3,7 @@ const wikiQueries = require("../db/queries.wikis.js");
 const passport = require("passport");
 const Authorizer = require("../policies/wiki");
 var fs = require('fs');
+const markdown = require( "markdown" ).markdown;
 
 module.exports = {
   show(req, res, next){
@@ -41,12 +42,12 @@ module.exports = {
   },
   create(req, res, next){
     //#1
-    const authorized = new Authorizer(req.user, wiki).create();
+    const authorized = new Authorizer(req.user).create();
 
     if(authorized) {
       let newArticle = {
           title: req.body.title,
-          body: req.body.body,
+          body: markdown.toHTML(req.body.body),
           private: req.body.private === 'on' ? true: false,
           userId: req.user.id
       };
@@ -104,7 +105,7 @@ module.exports = {
   update(req, res, next){
     let updateArticle = {
         title: req.body.title,
-        body: req.body.body,
+        body: markdown.toHTML(req.body.body),
         private: req.body.private === 'on' ? true: false,
     };
     wikiQueries.updateWiki(req, updateArticle, (err, wiki) => {

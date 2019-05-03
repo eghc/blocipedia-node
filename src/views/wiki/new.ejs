@@ -3,16 +3,16 @@
 
 <main class="container">
   <header class="jumbotron">
-    <h1>Add an Article</h1>
+    <h1>Add a Wiki</h1>
   </header>
   <form action="/wiki/create" method="post">
     <div class="form-group">
-      <label for="title">Article Title</label>
+      <label for="title">Wiki Title</label>
       <input type="text" class="form-control" name="title" aria-describedby="titleHelp" placeholder="Enter Title">
       <small class="text-muted" id="titleHelp">Title must be 5 or more characters in length.</small>
     </div>
     <div class="form-group">
-      <label for="body">Article Body</label>
+      <label for="body">Wiki Body</label>
       <textarea rows="4" class="form-control" name="body" placeholder="Enter body of the article."></textarea>
       <small class="text-muted" id="bodyHelp">Body must be 150 or more characters in length.</small>
     </div>
