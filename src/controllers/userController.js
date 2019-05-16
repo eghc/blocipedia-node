@@ -1,4 +1,6 @@
 const userQueries = require("../db/queries.users.js");
+const wikiQueries = require("../db/queries.wikis.js");
+const collaboratorsQueries = require("../db/queries.collaborators.js");
 const passport = require("passport");
 const sgMail = require('@sendgrid/mail');
 const Authorizer = require("../policies/application");
@@ -109,6 +111,8 @@ module.exports = {
           req.flash("notice", "There was an error downgrading your account.");
           res.redirect(500, "/profile");
         }else{
+          wikiQueries.makePublic(req);
+          collaboratorsQueries.deleteCollaboration(req);
           res.redirect(303,"/profile");
         }
       });

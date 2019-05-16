@@ -13,6 +13,7 @@
         <div class="col-md-2">
             <button type="submit" class="btn btn-primary btn-sm">Done</button>
         </div>
+
       </header>
       <section class="col-lg-10">
         <div class="form-group">
@@ -23,6 +24,9 @@
         <div class="form-check">
           <input type="checkbox" class="form-check-input" name="private" <% if(wiki.private){%> checked <%}%>>
           <label class="form-check-label" for="private">Please check this if you would like this article to be private.</label>
+          <input type="text" class="form-control" name="collaborators"
+          placeholder="List the emails of users, seperated by commas, that you would like to collaborate on this private wiki."
+          value = "<%= collaborators %>">
         </div>
       <% } %>
 

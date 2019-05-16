@@ -12,5 +12,6 @@ router.get("/wiki/:id/edit", helper.ensureAuthenticated, wikiController.edit);
 router.post("/wiki/:id/update", wikiController.update);
 router.post("/wiki/:id/delete", wikiController.delete);
 router.get("/getPrivateWikis", wikiController.getPrivateWikis);
+router.get("/getCollabWikis", wikiController.getCollabWikis);
 
 module.exports = router;

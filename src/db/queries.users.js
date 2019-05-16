@@ -1,9 +1,31 @@
 // #1
 const User = require("./models").User;
 const bcrypt = require("bcryptjs");
-const wikiQueries = require("./queries.wikis.js");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
+
 
 module.exports = {
+  getUser(id,callback){
+    return User.findById(id)
+    .then((user) =>{
+      callback(null,user);
+    });
+  },
+  getUsers(emails, callback){
+      //let result = {};
+      return User.findAll({
+        where:{
+          email: {
+            [Op.in]: emails
+          }
+        }
+      })
+      .then((users) => {
+        callback(null, users);
+      })
+
+    },
 // #2
   createUser(newUser, callback){
 
@@ -49,7 +71,8 @@ module.exports = {
 
      });
    },
-   downgradeUser(req, callback){
+
+  downgradeUser(req, callback){
 
  // #1
       return User.findById(req.user.id)
@@ -69,7 +92,6 @@ module.exports = {
             fields: Object.keys(updatedUser)
           })
           .then(() => {
-            wikiQueries.makePublic(req);
             callback(null, user);
           })
 

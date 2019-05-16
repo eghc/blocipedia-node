@@ -12,7 +12,7 @@
     // $("#upgrade").click(function(){
     //   $(".form").load("/profile/upgrade");
     // });
-    let results = $.getJSON("/getPrivateWikis", {format: "json"})
+    let wikiResults = $.getJSON("/getPrivateWikis", {format: "json"})
     .done((data) =>{
       //console.log(data);
       let text = "";
@@ -23,6 +23,19 @@
             + "...</p></div></div>";
       });
       $("#privateWikis").html(text);
+    });
+
+    let collabResults = $.getJSON("/getCollabWikis", {format: "json"})
+    .done((data) =>{
+      console.log(data);
+      let text = "";
+      data.forEach((d) => {
+        console.log(d);
+        text += "<div class='row'><div class='col-md-10'><a href='/wiki/" + d.id
+          + "'><h4>" + d.title + "</h4></a><p>" + d.body.substring(0, 100).replace(/(<([^>]+)>)/ig,'')
+            + "...</p></div></div>";
+      });
+      $("#collabWikis").html(text);
     });
 
 
@@ -92,6 +105,14 @@
           <h2>My Private Wikis</h2>
           <div class="col-md-10">
             <div id="privateWikis">
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <h2>Collaboration Wikis</h2>
+          <div class="col-md-10">
+            <div id="collabWikis">
             </div>
           </div>
         </div>

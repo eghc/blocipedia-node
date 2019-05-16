@@ -1,6 +1,8 @@
 const Wiki = require("./models").Wiki;
+const Collaborators = require("./models").Collaborators;
 const Authorizer = require("../policies/wiki");
-const User = require("./models").User;
+//const collaboratorsQueries = require("./queries.collaborators.js");
+
 
 module.exports = {
 
@@ -50,7 +52,12 @@ module.exports = {
     })
   },
   getWiki(id, callback){
-    return Wiki.findById(id)
+    return Wiki.findById(id, {
+      include: [{
+        model: Collaborators,
+        as: "collaborators"
+      }]
+    })
     .then((wiki) => {
       callback(null, wiki);
     })
@@ -98,12 +105,16 @@ module.exports = {
          })
          .then(() => {
            callback(null, wiki);
-         })
+         }).catch((err) => {
+           callback(err);
+         });
        }else{
          req.flash("notice", "You are not authorized to do that.");
          callback("Forbidden");
        }
-     });
+     }).catch((err) => {
+       callback(err);
+     });;
    },
    getMyPrivateWikis(req, callback){
      return Wiki.findAll({
@@ -118,6 +129,43 @@ module.exports = {
      .catch((err) => {
        callback(err);
      });
+   },
+   getCollabWikis(req, callback){
+     return Collaborators.findAll({
+       where:{
+         userId: req.user.id
+       }
+     }).then((wikiIds) => {
+       let wikis = [];
+
+       console.log(wikiIds.length);
+       //let count = 0;
+       for(let i = 0; i < wikiIds.length; i++){
+         Wiki.findById(wikiIds[i].wikiId)
+         .then((wiki) => {
+           //console.log(wiki);
+           if(wiki){
+             wikis.push(wiki);
+          }
+           if(i === wikiIds.length-1){
+             callback(null, wikis);
+           }
+         })
+         .catch((err) => {
+           callback(err);
+         });
+
+       }
+         //console.log(w);
+      // console.log(wikis);
+      // callback(null, wikis);
+
+
+     })
+     .catch((err) => {
+       callback(err);
+     });
+
    },
    makePublic(req, callback){
      return Wiki.findAll({
